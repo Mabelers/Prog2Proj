@@ -1,10 +1,17 @@
 from abc import ABC, abstractmethod
-from accountsdb import Database
+from database import Database
+from valideringfunktioner import *
 
 class Account: 
     def __init__(self, balance, accountdetails: Accountdetails ):
         self.balance = balance
-        self.accountdetails = accountdetails
+
+class Adress: 
+    def __init__(self, street, post_number, city, country):
+        self.street = street
+        self.post_number = post_number
+        self.city = city
+        self.country = country
 
 class Persondetails:
     def __init__(self, name, person_number, email, phonenumber, adress: Adress):
@@ -14,12 +21,21 @@ class Persondetails:
         self.phonenumber = phonenumber
         self.adress = adress
 
-class Adress: 
-    def __init__(self, street, post_number, city, country):
-        self.street = street
-        self.post_number = post_number
-        self.city = city
-        self.country = country
+    @staticmethod
+    def create_person_input():
+        adressitems = ["street","post_number","city","country"]
+        new_profile = {}
+        new_profile["adress"] = {}
+        for keyname , keyconfig in VALIDATION_CONFIGURATIONS.items():
+            if keyname in adressitems:
+                temp = multiValidationInput(keyname,keyconfig)
+                new_profile["adress"][keyname] = temp
+            else:
+                temp = multiValidationInput(keyname,keyconfig)
+                new_profile[keyname] = temp
+        
+        
+
 
 class Transaction(ABC):
     def __init__(self, amount, my_account: Account):
