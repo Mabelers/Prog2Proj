@@ -20,8 +20,12 @@ class CurrentSession:
             adress        = adress_dict
             )
         # Create user with insert here.
+
+
+    def create_account(self):
+        pass
     
-    def login(self, person_number, password_input):
+    def login(self):
         
 
         

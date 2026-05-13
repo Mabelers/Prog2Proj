@@ -14,9 +14,7 @@ VALIDATION_CONFIGURATIONS = {
 
 'city': {'charmax': 85, 'charmin': 2, 'digitonly': False, 'lettersonly': False, 'message': "City: "  },
 
-'country': {'charmax': 56, 'charmin': 2, 'digitonly': False, 'lettersonly': False, 'message': "Country: "  },
-
-'password': {'charmax': 50, 'charmin': 10, 'digitonly': False, 'lettersonly': False, 'message': "Password for new user: "  }
+'country': {'charmax': 56, 'charmin': 2, 'digitonly': False, 'lettersonly': False, 'message': "Country: "  }
 }
 
 
@@ -49,8 +47,34 @@ def multiValidationInput(keyname, keyconfig):
                 exit()
         return userinput
     
-def passwordValidation(password):
-    
+def CreateValidPass():
+
+    while True:
+        password = input("Enter new password: ")
+        if len(password) < 10:
+            print("Password too short! Min 10 characters. Try again!")
+            continue
+        if len(password) > 40:
+            print("Password too long! Max 40 characters. Try again!")
+            continue
+        for char in password:
+            if char.isdigit():
+                break
+        else:
+            print("At least one number required!")
+            continue
+        for char in password:
+            if char.isupper():
+                break
+        else:
+            print("At least one capital letter required!")
+            continue
+        validatepw = input("Confirm password: ")
+        if password != validatepw:
+            print("Passwords don't match!")
+            continue
+        else:
+            return password
 
 
 	    #     if key['lettersonly'] and not output.replace(" ", "").isalpha():

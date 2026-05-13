@@ -21,16 +21,14 @@ class AccountRepo:
     def __init__(self, database: Database):
         self.db = database
 
-    def has_Account(self):
-        pass
+        
+
     def checkPerson_number(self, person_number):
         self.db.cursor.execute(
             "SELECT * FROM Individuals where person_number = ?", (person_number,)
             )
         row = self.db.cursor.fetchone()
-        if has_Account(row):
-            return 
-        return
+        # Add check for account, compare with person number
         
         
 
