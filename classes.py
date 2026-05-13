@@ -14,25 +14,15 @@ class Adress:
         self.country = country
 
 class Persondetails:
-    def __init__(self, name, person_number, email, phonenumber, adress: Adress):
+    def __init__(self, name, person_number, password, email, phonenumber, adress: Adress):
         self.name = name
         self.person_number = person_number
+        self.password = password
         self.email = email
         self.phonenumber = phonenumber
         self.adress = adress
 
-    @staticmethod
-    def create_person_input():
-        adressitems = ["street","post_number","city","country"]
-        new_profile = {}
-        new_profile["adress"] = {}
-        for keyname , keyconfig in VALIDATION_CONFIGURATIONS.items():
-            if keyname in adressitems:
-                temp = multiValidationInput(keyname,keyconfig)
-                new_profile["adress"][keyname] = temp
-            else:
-                temp = multiValidationInput(keyname,keyconfig)
-                new_profile[keyname] = temp
+
         
         
 

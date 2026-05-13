@@ -76,7 +76,18 @@ def CreateValidPass():
         else:
             return password
 
-
+def create_person_input():
+    adressitems = ["street","post_number","city","country"]
+    new_profile = {}
+    new_profile["adress"] = {}
+    for keyname , keyconfig in VALIDATION_CONFIGURATIONS.items():
+        if keyname in adressitems:
+            temp = multiValidationInput(keyname,keyconfig)
+            new_profile["adress"][keyname] = temp
+        else:
+            temp = multiValidationInput(keyname,keyconfig)
+            new_profile[keyname] = temp
+    return new_profile
 	    #     if key['lettersonly'] and not output.replace(" ", "").isalpha():
         #             raise ValueError(f'{key} must only contain letters! No numbers/other characters.')
         # except:
