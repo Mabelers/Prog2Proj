@@ -1,12 +1,12 @@
-from abc import ABC, abstractmethod
 import sqlite3
+from classes import Account
 
 
 class Database:
     def __init__(self):
         self.connection = sqlite3.connect("BankDatabase.db")
         self.connection.row_factory = sqlite3.Row
-        self.cursor = self.connect.cursor()
+        self.cursor = self.connection.cursor()
     
     def disconnect(self):
         self.connection.close()
@@ -28,40 +28,76 @@ class Customers(Database):
 
     def db_insertCustomer(self, address_id, customer_data):
         self.cursor.execute(
-    """
-    INSERT INTO Individuals 
-    (person_number, name, email, phonenumber, address_id, passwordhash) 
-    VALUES 
-    (?, ?, ?, ?, ?, ?)""",
-    (customer_data.person_number,
-     customer_data.name,
-     customer_data.email,
-     customer_data.phonenumber,
-     address_id,
-     customer_data.password)
+        """
+        INSERT INTO Individuals 
+        (person_number, name, email, phonenumber, address_id, passwordhash) 
+        VALUES 
+        (?, ?, ?, ?, ?, ?)""",
+        (customer_data.person_number,
+        customer_data.name,
+        customer_data.email,
+        customer_data.phonenumber,
+        address_id,
+        customer_data.password)
             )
         
+    def db_insertAccount(self, loggedinUser, currency):
+        self.cursor.execute("""
+        INSERT INTO Accounts
+        (person_number, balance, currency)
+        VALUES
+        (?, ?, ?)""",
+        (loggedinUser.person_number, 0, currency)
+        )
+        self.savestate()
+        return self.cursor.lastrowid
+    
+
     def db_fetchIndividual(self, person_number_input):
         self.cursor.execute(
             "SELECT * FROM Individuals WHERE person_number = ?",
-            (person_number_input)
+            (person_number_input, )
             )
         return self.cursor.fetchone()
         
     def db_fetchAddress(self, person_number_input):
         self.cursor.execute(
-            "SELECT * FROM Address WHERE person_number = ?",
-            (person_number_input)
+            "SELECT * FROM Addresses WHERE person_number = ?",
+            (person_number_input, )
             )
         return self.cursor.fetchone()
         
-
-    def checkPerson_number(self, person_number):
+    def db_fetchAccounts(self, person_number):
         self.cursor.execute(
-            "SELECT * FROM Individuals where person_number = ?", (person_number,)
+            "SELECT * FROM Accounts WHERE person_number = ?",
+            (person_number, )
             )
-        row = self.cursor.fetchone()
-        # Add check for account, compare with person number
+        return self.cursor.fetchall()
+    
+    def db_selectAccount(self, account_number):
+        self.cursor.execute(
+            "SELECT * FROM Accounts WHERE account_number = ?",
+            (account_number, )
+            )
+        return self.cursor.fetchone()
+        
+    def db_save_Account(self, account: Account):
+        self.cursor.execute(
+            """
+            UPDATE Accounts 
+            SET balance = ?, currency = ? 
+            WHERE account_number = ?
+            """, 
+            (account.balance, account.currency, account.account_number))
+        self.savestate()
+
+
+    # def checkPerson_number(self, person_number):
+    #     self.cursor.execute(
+    #         "SELECT * FROM Individuals where person_number = ?", (person_number,)
+    #         )
+    #     row = self.cursor.fetchone()
+    #      Add check for account, compare with person number
         
         
 
