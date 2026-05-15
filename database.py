@@ -60,10 +60,10 @@ class Customers(Database):
             )
         return self.cursor.fetchone()
         
-    def db_fetchAddress(self, person_number_input):
+    def db_fetchAddress(self, address_id):
         self.cursor.execute(
-            "SELECT * FROM Addresses WHERE person_number = ?",
-            (person_number_input, )
+            "SELECT * FROM Addresses WHERE id = ?",
+            (address_id, )
             )
         return self.cursor.fetchone()
         

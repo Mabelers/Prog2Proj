@@ -28,9 +28,7 @@ while True:
         # Login option, requires previous registration
         if choose == "1":
             logged_in = session.login()
-            if logged_in == True:
-                pass
-            else:
+            if not logged_in:
                 continue
             break
             
@@ -50,12 +48,11 @@ while True:
                 
             elif result == "login":
                 logged_in = session.login()
-                if logged_in == True:
-                    pass
-                else:
+                
+                if not logged_in:
                     continue
                 break
-            
+                
             elif result == True:
                 print("Registration complete.")
         

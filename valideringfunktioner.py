@@ -3,7 +3,7 @@ import requests
 VALIDATION_CONFIGURATIONS = {
 'name': {'charmax': 15, 'charmin': 1, 'digitonly': False, 'lettersonly': True, 'message': "Complete name: "},
 
-'person_number': {'charmax': 11, 'charmin': 11, 'digitonly': True, 'lettersonly': False, 'message': "Complete personnummer: "  },
+'person_number': {'charmax': 12, 'charmin': 12, 'digitonly': True, 'lettersonly': False, 'message': "Complete personnummer(full years): "  },
 
 'email': {'charmax': 80, 'charmin': 6, 'digitonly': False, 'lettersonly': False, 'message': "Email address: "  },
 
@@ -17,6 +17,8 @@ VALIDATION_CONFIGURATIONS = {
 
 'country': {'charmax': 56, 'charmin': 2, 'digitonly': False, 'lettersonly': False, 'message': "Country: "  }
 }
+VALIDATE_PASSWORD = {'password': {'charmax': 40, 'charmin': 10, 'digitonly': False, 'lettersonly': False, 'message': "Password: " }}
+
 ALLOWED_CURRENCIES = ["SEK","USD","GBP","EUR","CNY"]
 
 def multiValidationInput(keyname, keyconfig):
@@ -24,10 +26,10 @@ def multiValidationInput(keyname, keyconfig):
         try:    
             userinput = input(keyconfig["message"])
             if len(userinput) < keyconfig['charmin']:
-                raise ValueError(f'\t\Input {keyname} is too short! Minimum {keyconfig['charmax']} characters!')
+                raise ValueError(f'\tInput {keyname} is too short! Minimum {keyconfig["charmax"]} characters!')
                
             if len(userinput) > keyconfig['charmax']:
-                raise ValueError(f'\t\Input {keyname} is too long! Maximum {keyconfig['charmax']} characters!')
+                raise ValueError(f'\tInput {keyname} is too long! Maximum {keyconfig["charmax"]} characters!')
                 
             if keyconfig['lettersonly'] and not userinput.replace(" ","").isalpha():
                 raise ValueError(f'{keyname} must only contain letters! No numbers/other characters.')

@@ -72,7 +72,7 @@ class Service:
         while True:
             # Validate login inputs
             person_config = VALIDATION_CONFIGURATIONS["person_number"]
-            password_config = VALIDATION_CONFIGURATIONS["password"]
+            password_config = VALIDATE_PASSWORD["password"]
             person_number_input = multiValidationInput("person_number",person_config)
             password_input = multiValidationInput("password",password_config)
             
@@ -87,7 +87,7 @@ class Service:
                                         login_profile["passwordhash"])
             if compare == True:
                 print(f"Password verified, Welcome {login_profile['name']}!")
-                a = self.db.db_fetchAddress(login_profile["adress"])
+                a = self.db.db_fetchAddress(login_profile["address_id"])
                 adress_obj = Adress(
                 street      = a["street"],
                 post_number = a["post_number"],
