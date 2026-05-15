@@ -61,9 +61,11 @@ class Service:
             print("Database error")  
             self.db.connection.rollback()
             return False  
+        except KeyboardInterrupt:
+            exit()
         except:
             print("Unknown error has crashed the user" \
-            " creation enviroment. Contact the developer.")  
+            " creation enviroment. Contact the developer. ")  
             self.db.connection.rollback()
             return False  
      
@@ -73,20 +75,28 @@ class Service:
             # Validate login inputs
             person_config = VALIDATION_CONFIGURATIONS["person_number"]
             password_config = VALIDATE_PASSWORD["password"]
+
             person_number_input = multiValidationInput("person_number",person_config)
+            if person_number_input == False:
+                return False
             password_input = multiValidationInput("password",password_config)
             
             # profile of personnumber
             login_profile = self.db.db_fetchIndividual(person_number_input)
             if not login_profile:
-                print("Error, user not found.")
-                continue
+                print("\n\tWe could not find this user registered.")
+                print("\n\tMake sure your information is correct.\n")
+                if pathYesNo("Try again?"):
+                    continue
+                else: 
+                    return False
             # Compares password and users password hash, 
             # if match return true, otherwise false
             compare = bcrypt.checkpw(password_input.encode("utf-8"), 
                                         login_profile["passwordhash"])
             if compare == True:
-                print(f"Password verified, Welcome {login_profile['name']}!")
+                print(f"\n\tPassword verified.")
+                print(f"\n\n\n\tWelcome {login_profile['name']}!")
                 a = self.db.db_fetchAddress(login_profile["address_id"])
                 adress_obj = Adress(
                 street      = a["street"],
@@ -104,7 +114,7 @@ class Service:
                 )
                 return Current_User
             elif compare == False:
-                print("Password mismatch, try again?")
+                print("\n\tPassword mismatch, try again?")
                 x = input("Y/N: ")
                 if x.lower() == "y":
                     continue
@@ -117,20 +127,31 @@ class Service:
     # Function to demand input for a currency, with a 
     # whitelist to decide allowed currencies.
     def create_new_account(self, loggedinUser):
-        print(f"""Hello {loggedinUser.name}! Thank you for
-               choosing to open a new account at Marcus bank system.""")
+        print(f"""\n\tHello {loggedinUser.name}! 
+        Thank you for choosing to open a new account at Marcus bank system.\n""")
 
-        currency = account_currency_select()
+        print("""\tSelect a currency type for your account.
 
-        account_id = self.db.db_insertAccount(loggedinUser, currency)
+        This will be the currency type for your entire balance tied to this account.
+        This can be changed at a later date!""")
+        currency = currency_select()
+        print("\n\tConfirm account details: ")
+        print(f"\tNameholder: {loggedinUser.name}")
+        print(f"\tPerson number: {loggedinUser.person_number}")
+        print(f"\tCurrency type: {currency}")
+        print(f"\tInitial Balance: 0 {currency}\n")
+        if pathYesNo("Create this account?"):  
+            account_id = self.db.db_insertAccount(loggedinUser, currency)
+        else:
+            return False
 
-        print("Account creation successful!")
-        print(f"A new account has been created with the '{loggedinUser.person_number}' identifier.")
+        print("\n\n\tAccount creation successful!")
+        print(f"\tA new account has been created from unique user '{loggedinUser.person_number}'!")
         print(f"""
-            New account details\n
-            Account ID:\t {account_id}\n
-            Belongs to:\t {loggedinUser.name}\n
-            Currency type:\t {currency}\n""")
+            New account details:\n
+            Account ID: {account_id}\n
+            Belongs to: {loggedinUser.name}\n
+            Currency type: {currency}\n""")
 
     
     def load_account(self, selected_account):
