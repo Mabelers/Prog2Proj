@@ -1,52 +1,143 @@
 import requests
 
+# Input validation configuration. 
+# Decides on allowed states of different input types during input.
+# Allows for error handling and data integrity.
 VALIDATION_CONFIGURATIONS = {
-'name': {'charmax': 15, 'charmin': 1, 'digitonly': False, 'lettersonly': True, 'message': "\nFull name: "},
+'name': 
+{
+'charmax': 15,
+'charmin': 1, 
+'digitonly': False, 
+'lettersonly': True, 
+'message': "\nFull name: "
+},
 
-'person_number': {'charmax': 12, 'charmin': 12, 'digitonly': True, 'lettersonly': False, 'message': "Complete personnummer(full years): "  },
+'person_number': 
+{
+'charmax': 12, 
+'charmin': 12, 
+'digitonly': True, 
+'lettersonly': False, 
+'message': "Complete personnummer(full years): "
+},
 
-'email': {'charmax': 80, 'charmin': 6, 'digitonly': False, 'lettersonly': False, 'message': "Email address: "  },
+'email': 
+{
+'charmax': 80, 
+'charmin': 6, 
+'digitonly': False, 
+'lettersonly': False, 
+'message': "Email address: "  
+},
 
-'phonenumber': {'charmax': 15, 'charmin': 7, 'digitonly': True, 'lettersonly': False, 'message': "Phone number: "  },
+'phonenumber': 
+{
+'charmax': 15, 
+'charmin': 7, 
+'digitonly': True, 
+'lettersonly': False, 
+'message': "Phone number: "  
+},
 
-'street': {'charmax': 80, 'charmin': 2, 'digitonly': False, 'lettersonly': False, 'message': "Street address: "  },
+'street': 
+{
+'charmax': 80, 
+'charmin': 2, 
+'digitonly': False, 
+'lettersonly': False, 
+'message': "Street address: "
+},
 
-'post_number': {'charmax': 10, 'charmin': 4, 'digitonly': True, 'lettersonly': False, 'message': "Postnumber: "  },
+'post_number': 
+{
+'charmax': 10, 
+'charmin': 4, 
+'digitonly': True, 
+'lettersonly': False, 
+'message': "Postnumber: "
+},
 
-'city': {'charmax': 85, 'charmin': 2, 'digitonly': False, 'lettersonly': False, 'message': "City: "  },
+'city': 
+{
+'charmax': 85, 
+'charmin': 2, 
+'digitonly': False, 
+'lettersonly': False, 
+'message': "City: "  
+},
 
-'country': {'charmax': 56, 'charmin': 2, 'digitonly': False, 'lettersonly': False, 'message': "Country: "  }
+'country': 
+{
+'charmax': 56, 
+'charmin': 2, 
+'digitonly': False, 
+'lettersonly': False, 
+'message': "Country: "  
 }
-VALIDATE_PASSWORD = {'password': {'charmax': 40, 'charmin': 10, 'digitonly': False, 'lettersonly': False, 'message': "Password: " }}
+}
 
+# Password input configuration, allows to validate password.
+# Seperate from other inputs, since password is applied after,
+# and the others are validated in an iteration.
+VALIDATE_PASSWORD = {
+'password': 
+{
+'charmax': 40, 
+'charmin': 10, 
+'digitonly': False, 
+'lettersonly': False, 
+'message': "Password: " 
+}}
+
+# Small list of allowed currencies.
+# To add more, make sure the short term is correct.
+# APIs will automatically accept this new currency in this list.
+# And user creation will allow switching to it.
+# As long as the 3 letter word is correct.
 ALLOWED_CURRENCIES = ["SEK","USD","GBP","EUR","CNY"]
 
-# CHOICES:
 
+# Validation funciton for most inputs.
+# param1: keyname, the name of current value being set. Used for prints.
+# param2: keyconfig, the configuration for said value type.
+# Function takes input value, does error handling,
+# and makes sure the input is within configuration specifications
 def multiValidationInput(keyname, keyconfig):
     while True:   
         try:    
             userinput = input(f"\t{keyconfig['message']}")
+            replaced = userinput.replace(" ","")
             if len(userinput) < keyconfig['charmin']:
-                raise ValueError(f'\tInput {keyname} is too short! Minimum {keyconfig["charmax"]} characters!')
+                raise ValueError(f'''\tInput {keyname} is too short!
+                                Minimum {keyconfig["charmin"]} characters!''')
                
             if len(userinput) > keyconfig['charmax']:
-                raise ValueError(f'\tInput {keyname} is too long! Maximum {keyconfig["charmax"]} characters!')
+                raise ValueError(f'''\tInput {keyname} is too long! 
+                                Maximum {keyconfig["charmax"]} characters!''')
                 
-            if keyconfig['lettersonly'] and not userinput.replace(" ","").isalpha():
-                raise ValueError(f'\t{keyname} must only contain letters! No numbers/other characters.')
+            if keyconfig['lettersonly'] and not replaced.isalpha():
+                raise ValueError(f'''\t{keyname} must only contain letters!
+                                No numbers/other characters.''')
 
-            if keyconfig['digitonly'] and not userinput.replace(" ","").isdigit():
-                raise ValueError(f'\t{keyname} must only contain numbers! No letters/other characters.')
+            if keyconfig['digitonly'] and not replaced.isdigit():
+                raise ValueError(f'''\t{keyname} must only contain numbers!
+                                No letters/other characters.''')
 
-        except(KeyError,ValueError,TypeError):
-            print(f"\n\tSomething went wrong during {keyname} input.\n")
+        except ValueError as e:
+            print(e)
             if pathYesNo("Try again?"):
                 continue
             else:
                 return False  
+        except(KeyError, TypeError):
+            print(f"\n\tConfig error during {keyname} input.\n")
+            exit()
         return userinput
-    
+
+# Password creation function:
+# Called during password creation, uses password validation 
+# according to a preset configuration
 def CreateValidPass():
 
     while True:
@@ -77,6 +168,11 @@ def CreateValidPass():
         else:
             return password
 
+# User creation function:
+# Creates the user dictionary, with a nested adress key as its own dict
+# Through iterations and conditions, 
+# all keynames in list adressitems, is filtered into its own dict
+# This way the User is created, with the nested adress informaton.
 def create_person_input():
     adressitems = ["street","post_number","city","country"]
     new_profile = {}
@@ -89,32 +185,12 @@ def create_person_input():
             temp = multiValidationInput(keyname,keyconfig)
             new_profile[keyname] = temp
     return new_profile
-# def account_currency_select():
-#     while True:
-#         print("""\tSelect a currency type for your account.
-#             This will be the currency type for your entire balance tied to this account.
-#             This can be changed at a later date!""")
-#         currency = currency_select()
-#         if currency == "":
-#             print("\t\nEmpty input detected, please pick a currency type!\n\n")
-#             continue
-#         elif currency in ALLOWED_CURRENCIES:
-#             return currency
-#         else:
-#             print("We do not support this currency type.")
-#             print("Pick a new currency or cancel account creation?")
-#             print("Type 'new' to select a new currency. " \
-#             "Otherwise press enter to cancel creation.")
-#             choose = input("new or cancel: ")
-#             choose = choose.strip().lower()
-#             while True:
-#                 choose = pathChooseXnumber(2,"Select option 1-2:")
-#                 if choose == "1":
-#                     break
-#                 elif choose == "2":
-#                     return False
-#             continue
 
+
+# Currency select function:
+# Iterates through all ALLOWED_CURRENCIES, which acts as a whitelist for user
+# input. Only value that passes whitelist validation may be returned.
+# Also prints all supported types for user visual.
 def currency_select():
     print("\n\tSupported currency types:\n")
     print("\t",end="")
@@ -128,6 +204,10 @@ def currency_select():
             print(f"{curr}  ",end="")
         currency = input("\n\tYour Choice: ")
     return currency
+
+# Number validation function:
+# Validation of a user balance input.
+# Used for deposit, withdrawal and transfer of balance.
 
 def balance_input(type):
     while True:
@@ -154,6 +234,11 @@ def balance_input(type):
             continue
 
 
+# Account select function:
+# param: List of all account numbers available to this user account.
+# Allows for fast user input, list is used as a whitelist, 
+# only items listed inside the param, will return the
+# correct account type user specified
 def account_select(accounts):
     while True:
         try:
@@ -177,6 +262,8 @@ def account_select(accounts):
             print("\tWe only accept numbers, be careful when typing,",end="")
             print("dont add spaces/letters")
 
+# Direct integer input, with validation.
+# Used for selecting a bank account number, to transfer funds to.
 def transfer_account_input():
     print("\n\n\tYou have chosen to transfer balance to another account!")
     while True:
@@ -185,8 +272,8 @@ def transfer_account_input():
             account = int(account)
             return account
         except ValueError:
-            print("\tWe only accept numbers, be careful when typing,",end="")
-            print("dont add spaces/letters")
+            print("\tWe only accept whole numbers,",end="")
+            print(" be careful when typing, dont add spaces/letters")
 
 
 # Function fetches current exchange rate between 2 currencies.
@@ -194,7 +281,7 @@ def transfer_account_input():
 # param: to_currency: To currency type. 
 # return: value: Current exchange rate in decimal float param1 and param2
 def currency_fetch(from_currency, to_currency):
-    
+
     try:
         url = f"https://api.frankfurter.app/latest?from={from_currency}&to={to_currency}"
         urlresponse = requests.get(url)
