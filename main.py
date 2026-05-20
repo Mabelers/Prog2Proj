@@ -45,12 +45,11 @@ while True:
 
             result = session.create_new_user()
 
-            # Registration failed Path, program shutdown.
+            # Registration failed Path, program restart.
             if result == False:
-                print("\n\tAn error has occured in the program.")
-                print("\tCurrently we dont support these bugs, ",end="")
-                print("program will now shutdown.")
-                exit()
+                continue
+
+
             # Secondary login Path, if user already exists
             elif result == "login":
                 logged_in = session.login()
@@ -65,8 +64,12 @@ while True:
         
         # Exits program, 
         elif choose == "3":
-            print("Exiting bank system, have a good day!")
-            exit()
+            if pathYesNo("Confirm exit program?"):
+                print("\n\n\n\nExiting bank system, have a good day!")
+                exit()
+            else:
+                continue
+
 
     # Loop for account selection / account creation.
     while True:
@@ -116,9 +119,15 @@ while True:
                 user_accounts = []
                 for account in accounts:
                     user_accounts.append(account["account_number"])
+                
                 selected_id = account_select(user_accounts)
-                selected_account = session.db.db_selectAccount(selected_id)
-                live_account = session.load_account(selected_account)
+                if selected_id:
+                    selected_account = session.db.db_selectAccount(selected_id)
+                    live_account = session.load_account(selected_account)
+                else:
+                    print("\n\tYou have chosen to not try again.",end=" ")
+                    print("Back to account screen.")
+                    continue
                 
         # Create new account path
         elif account_path == "2":

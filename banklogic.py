@@ -16,7 +16,11 @@ class Service:
     def create_new_user(self):
         try:
             # Input validation function, outputs finished new account template
+
             new_profile = create_person_input()
+            if new_profile == False:
+                print("\n\tAccount creation cancelled. Back to main menu.")
+                return False
             print("New user template successfull.")
             print("Create a password to use on this profile!")
 

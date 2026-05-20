@@ -6,11 +6,11 @@ import requests
 VALIDATION_CONFIGURATIONS = {
 'name': 
 {
-'charmax': 15,
+'charmax': 30,
 'charmin': 1, 
 'digitonly': False, 
 'lettersonly': True, 
-'message': "\nFull name: "
+'message': "\n\tFull name: "
 },
 
 'person_number': 
@@ -110,19 +110,19 @@ def multiValidationInput(keyname, keyconfig):
             replaced = userinput.replace(" ","")
             if len(userinput) < keyconfig['charmin']:
                 raise ValueError(f'''\tInput {keyname} is too short!
-                                Minimum {keyconfig["charmin"]} characters!''')
+        Minimum {keyconfig["charmin"]} characters!''')
                
             if len(userinput) > keyconfig['charmax']:
                 raise ValueError(f'''\tInput {keyname} is too long! 
-                                Maximum {keyconfig["charmax"]} characters!''')
+        Maximum {keyconfig["charmax"]} characters!''')
                 
             if keyconfig['lettersonly'] and not replaced.isalpha():
                 raise ValueError(f'''\t{keyname} must only contain letters!
-                                No numbers/other characters.''')
+        No numbers/other characters.''')
 
             if keyconfig['digitonly'] and not replaced.isdigit():
                 raise ValueError(f'''\t{keyname} must only contain numbers!
-                                No letters/other characters.''')
+        No letters/other characters.''')
 
         except ValueError as e:
             print(e)
@@ -177,13 +177,20 @@ def create_person_input():
     adressitems = ["street","post_number","city","country"]
     new_profile = {}
     new_profile["adress"] = {}
-    for keyname , keyconfig in VALIDATION_CONFIGURATIONS.items():
-        if keyname in adressitems:
-            temp = multiValidationInput(keyname,keyconfig)
-            new_profile["adress"][keyname] = temp
-        else:
-            temp = multiValidationInput(keyname,keyconfig)
-            new_profile[keyname] = temp
+    for keyname , keyconfig in VALIDATION_CONFIGURATIONS.items():     
+            if keyname in adressitems:        
+                temp = multiValidationInput(keyname,keyconfig)
+                if temp == False:
+                    return False
+                else:  
+                    new_profile["adress"][keyname] = temp
+            else:
+                
+                temp = multiValidationInput(keyname,keyconfig)
+                if temp == False:
+                    return False
+                new_profile[keyname] = temp
+            
     return new_profile
 
 
@@ -251,12 +258,10 @@ def account_select(accounts):
                 return account
             else: 
                 print("\tIncorrect account number.")
-                print("\tTry again?")
-                choice = input("y/n")
-                if choice.lower() == "y":
-                    continue
-                else:
-                    break
+            if pathYesNo("Try again?"):
+                continue
+            else:
+                return False 
 
         except ValueError:
             print("\tWe only accept numbers, be careful when typing,",end="")
